@@ -1,0 +1,16 @@
+[project]
+name = "LuauDocs"
+version = "0.1.0"
+description = "Luau documentation generator for Roblox developers"
+authors = [{name = "Metroonix"}]
+license = "MIT"
+
+[project.scripts]
+luau_docs = "luau_docs.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
