@@ -1,10 +1,16 @@
---- @class PlayerModule
--- Handles player data and events
+--- @class Player
+--- @field name string
+--- @field score number
 
---- Initializes the player
--- @param player Player
--- @return boolean success
-function PlayerModule.init(player)
+local Player = {}
+Player.__index = Player
+
+--- @param name string
+function Player.new(name)
+    local self = setmetatable({}, Player)
+    self.name = name
+    self.score = 0
+    return self
 end
 
---- @event LevelUp
+return Player

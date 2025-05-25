@@ -1,9 +1,21 @@
 [project]
-name = "LuauDocs"
-version = "0.1.0"
+name = "luau_docs"
+version = "1.0.0"
 description = "Luau documentation generator for Roblox developers"
-authors = [{name = "Metroonix"}]
-license = "MIT"
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [{ name = "Metroonix" }]
+license = { text = "MIT" }
+keywords = ["roblox", "luau", "documentation", "markdown", "cli"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Developers",
+    "Topic :: Documentation",
+    "Topic :: Software Development :: Documentation",
+    "Development Status :: 4 - Beta"
+]
 
 [project.scripts]
 luau_docs = "luau_docs.cli:main"
@@ -12,5 +24,5 @@ luau_docs = "luau_docs.cli:main"
 where = ["."]
 
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"

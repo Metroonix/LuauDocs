@@ -1,12 +1,9 @@
 import re
 
-# Regex to capture tagged lines
+# Regex definitions
 TAG_REGEX = re.compile(r"---\s*@(\w+)\s*(.*)?")
-# Regex to capture description lines 
 DESC_REGEX = re.compile(r"--\s?(.*)")
-# Regex to capture function signatures 
 FUNC_REGEX = re.compile(r"function\s+([\w\.]+)\((.*?)\)")
-# Regex to capture variables
 VAR_REGEX = re.compile(r"^(local\s+)?(\w+)\s*=\s*.*$")
 
 def parse_luau_file(filepath):
@@ -17,12 +14,12 @@ def parse_luau_file(filepath):
         "classes": [],
         "functions": [],
         "events": [],
-        "variables": [],  # Add variables list here
+        "variables": [],
     }
 
     current_class = None
     current_func = None
-    current_variable = None  # Track current variable
+    current_variable = None
     current_desc = []
     current_tags = {}
 
@@ -53,7 +50,7 @@ def parse_luau_file(filepath):
                             "name": parts[1] if len(parts) > 1 else "",
                             "description": parts[2] if len(parts) > 2 else "",
                         })
-            if current_class is not None:
+            if current_class:
                 current_class.setdefault("functions", []).append(func_info)
             else:
                 docs["functions"].append(func_info)
@@ -74,9 +71,8 @@ def parse_luau_file(filepath):
         nonlocal current_variable, current_desc, current_tags
         if current_variable:
             current_variable["description"] = " ".join(current_desc).strip()
-            # Try to get type from tags if exists
             current_variable["type"] = current_tags.get("type", [""])[0]
-            if current_class is not None:
+            if current_class:
                 current_class.setdefault("variables", []).append(current_variable)
             else:
                 docs["variables"].append(current_variable)
@@ -84,7 +80,7 @@ def parse_luau_file(filepath):
         current_desc = []
         current_tags = {}
 
-    for i, line in enumerate(lines):
+    for line in lines:
         tag_match = TAG_REGEX.match(line)
         desc_match = DESC_REGEX.match(line)
         func_match = FUNC_REGEX.search(line)
@@ -96,12 +92,18 @@ def parse_luau_file(filepath):
                 store_function()
                 store_variable()
                 store_class()
-                current_class = {"name": value.strip(), "description": "", "functions": [], "events": [], "variables": []}
+                current_class = {
+                    "name": value.strip(),
+                    "description": "",
+                    "functions": [],
+                    "events": [],
+                    "variables": [],
+                }
                 current_desc = []
                 current_tags = {}
             elif tag == "event":
                 event_name = value.strip()
-                if current_class is not None:
+                if current_class:
                     current_class.setdefault("events", []).append(event_name)
                 else:
                     docs["events"].append(event_name)
@@ -129,10 +131,7 @@ def parse_luau_file(filepath):
             if content:
                 current_desc.append(content)
 
-        else:
-            # ignore other lines
-            pass
-
+    # Final flush
     store_function()
     store_variable()
     store_class()
