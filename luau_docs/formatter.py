@@ -1,5 +1,3 @@
-import json
-
 def format_to_markdown(parsed_data):
     md = []
 

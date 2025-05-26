@@ -1,18 +1,13 @@
-import argparse, os, fnmatch
+import argparse
+import os
+import json
 from luau_docs.parser import parse_luau_file
 from luau_docs.formatter import format_to_markdown
+from luau_docs.utils import gather_files
 
-def gather_files(input_path, excludes):
-    matches = []
-    if os.path.isfile(input_path):
-        return [input_path]
-    for root, dirs, files in os.walk(input_path):
-        # remove excluded dirs
-        dirs[:] = [d for d in dirs if not any(fnmatch.fnmatch(d, pat) for pat in excludes)]
-        for file in files:
-            if file.endswith((".lua", ".luau")) and not any(fnmatch.fnmatch(file, pat) for pat in excludes):
-                matches.append(os.path.join(root, file))
-    return matches
+default_markdown_path = "generated_markdown_docs"
+default_json_path = "generated_json_docs"
+
 
 def main():
     p = argparse.ArgumentParser(
@@ -22,11 +17,12 @@ def main():
     )
 
     p.add_argument("input", nargs="?", help="File or directory to process")
-    p.add_argument("-o", "--out", default="docs", help="Output directory")
+    p.add_argument("-o", "--out", default=default_markdown_path, help="Output directory")
     p.add_argument("-e", "--exclude", default="", help="Comma-separated exclude patterns")
     p.add_argument("-f", "--format", choices=["md"], default="md", help="Output format (HTML Coming Soon)")
     p.add_argument("--tags", action="store_true", help="List supported tags and exit")
     p.add_argument("--html", action="store_true", help="(Coming soon) Generate HTML output")
+    p.add_argument("--json",action="store_true", help="Generate JSON file(s) for the Luau file(s)")
     p.add_argument("-v", "--verbose", action="store_true", help="Verbose logging")
 
     args = p.parse_args()
@@ -59,14 +55,26 @@ def main():
     for path in files:
         data = parse_luau_file(path)
         if args.format == "md":
-            text = format_to_markdown(data)
-            ext = ".md"
-        name = os.path.splitext(os.path.basename(path))[0] + ext
-        dest = os.path.join(out, name)
-        with open(dest, "w", encoding="utf-8") as f:
-            f.write(text)
-        if args.verbose:
-            print(f"→ Written {dest}")
+            md_text = format_to_markdown(data)
+            md_name = os.path.splitext(os.path.basename(path))[0] + ".md"
+            dest = os.path.join(out, md_name)
+            with open(dest, "w", encoding="utf-8") as f:
+                f.write(md_text)
+            if args.verbose:
+                print(f"→ Written {dest}")
+
+
+        """ If the User decides to generate a JSON file as well, it will by default be created in the same folder as all markdown files as specified by the user otherwise,
+            a new folder called 'generated_json_docs' will be created as well.' """
+        if args.json:
+            if out == default_markdown_path:
+                os.makedirs(default_json_path,exist_ok=True)
+            json_name = os.path.splitext(os.path.basename(path))[0] + ".json"
+            dest = os.path.join(default_json_path if out == default_markdown_path else out, json_name)
+            with open(dest, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=2)
+            if args.verbose:
+                print(f"→ Written {dest}")
 
 
 if __name__ == "__main__":

@@ -9,7 +9,7 @@
 
 # LuauDocs 
 
-A CLI & library to generate beautifully structured Markdown documentation from annotated Luau (`.lua`/`.luau`) source files.
+A CLI & library to generate structured Markdown documentation from annotated Luau (`.lua`/`.luau`) source files.
 
 Great for:
 - Internal dev tools
@@ -55,8 +55,8 @@ LuauDocs uses a [MIT License](/LICENSE)
 
 ## Contributions
 
-Interested in contributing to LuauDocs, find out how [here](/CONTRIBUTING.md)
+Interested in contributing to LuauDocs? find out how [here](/CONTRIBUTING.md)
 
 ## Roadmap
 
-Want to see where we are going with RoBall? View the [Roadmap](/ROADMAP.md)
+Want to see where we are going with LuauDocs View the [Roadmap](/ROADMAP.md)
